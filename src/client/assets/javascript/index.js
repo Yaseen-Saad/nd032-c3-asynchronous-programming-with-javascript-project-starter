@@ -165,24 +165,24 @@ async function runCountdown() {
 }
 
 function handleSelectPodRacer(target) {
-    console.log("selected a pod", target.id);
-  
-    // remove class selected from all racer options
-    const selected = document.querySelector("#racers .selected");
-    if (selected) {
-      selected.classList.remove("selected");
-    }
-  
-    // add class selected to current target
-    target.classList.add("selected");
-  
-    // Done - save the selected racer to the store
-    console.log("target.id :" + target.id);
-  
-    store.player_id = target.id;
-  
-    console.log("store.player_id AFTER UPDATE :" + store.player_id);
+  console.log("selected a pod", target.id);
+
+  // remove class selected from all racer options
+  const selected = document.querySelector("#racers .selected");
+  if (selected) {
+    selected.classList.remove("selected");
   }
+
+  // add class selected to current target
+  target.classList.add("selected");
+
+  // Done - save the selected racer to the store
+  console.log("target.id :" + target.id);
+
+  store.player_id = target.id;
+
+  console.log("store.player_id AFTER UPDATE :" + store.player_id);
+}
 function handleSelectTrack(target) {
   console.log("selected a track", target.id);
 
@@ -195,111 +195,113 @@ function handleSelectTrack(target) {
   // add class selected to current target
   target.classList.add("selected");
 
-  // TODO - save the selected track id to the store
+  // Done - save the selected track id to the store
+  store.track_id = target.id;
 }
 
 function handleAccelerate() {
-  console.log("accelerate button clicked");
-  // TODO - Invoke the API call to accelerate
+  // Done - Invoke the API call to accelerate
+  accelerate(store.race_id)
+    .then(() => console.log("Accelerate button clicked"))
+    .catch((error) => console.error("Problem with accelerating:", error));
 }
 
-// HTML VIEWS ------------------------------------------------
-// Provided code - do not remove
-
 function renderRacerCars(racers) {
+  console.log(racers);
+
   if (!racers.length) {
     return `
-			<h4>Loading Racers...</4>
-		`;
+              <h4>Loading Racers...</4>
+          `;
   }
 
   const results = racers.map(renderRacerCard).join("");
 
   return `
-		<ul id="racers">
-			${results}
-		</ul>
-	`;
+          <ul id="racers">
+              ${results}
+          </ul>
+      `;
 }
 
 function renderRacerCard(racer) {
   const { id, driver_name, top_speed, acceleration, handling } = racer;
 
   return `
-		<li class="card podracer" id="${id}">
-			<h3>${driver_name}</h3>
-			<p>${top_speed}</p>
-			<p>${acceleration}</p>
-			<p>${handling}</p>
-		</li>
-	`;
+          <li class="card podracer" id="${id}">
+              <h3>${driver_name}</h3>
+              <p>${top_speed}</p>
+              <p>${acceleration}</p>
+              <p>${handling}</p>
+          </li>
+      `;
 }
 
 function renderTrackCards(tracks) {
   if (!tracks.length) {
     return `
-			<h4>Loading Tracks...</4>
-		`;
+              <h4>Loading Tracks...</4>
+          `;
   }
 
   const results = tracks.map(renderTrackCard).join("");
 
   return `
-		<ul id="tracks">
-			${results}
-		</ul>
-	`;
+          <ul id="tracks">
+              ${results}
+          </ul>
+      `;
 }
 
 function renderTrackCard(track) {
   const { id, name } = track;
 
   return `
-		<li id="${id}" class="card track">
-			<h3>${name}</h3>
-		</li>
-	`;
+          <li id="${id}" class="card track">
+              <h3>${name}</h3>
+          </li>
+      `;
 }
 
 function renderCountdown(count) {
   return `
-		<h2>Race Starts In...</h2>
-		<p id="big-numbers">${count}</p>
-	`;
+          <h2>Race Starts In...</h2>
+          <p id="big-numbers">${count}</p>
+      `;
 }
 
 function renderRaceStartView(track, racers) {
   return `
-		<header>
-			<h1>Race: ${track.name}</h1>
-		</header>
-		<main id="two-columns">
-			<section id="leaderBoard">
-				${renderCountdown(3)}
-			</section>
-
-			<section id="accelerate">
-				<h2>Directions</h2>
-				<p>Click the button as fast as you can to make your racer go faster!</p>
-				<button id="gas-peddle">Click Me To Win!</button>
-			</section>
-		</main>
-		<footer></footer>
-	`;
+          <header>
+              <h1>Race: ${track.name}</h1>
+          </header>
+          <main id="two-columns">
+              <section id="leaderBoard">
+                  ${renderCountdown(3)}
+              </section>
+  
+              <section id="accelerate">
+                  <h2>Directions</h2>
+                  <p>Click the button as fast as you can to make your racer go faster!</p>
+                  <button id="gas-peddle">Click Me To Win!</button>
+              </section>
+          </main>
+          <footer></footer>
+      `;
 }
 
 function resultsView(positions) {
   positions.sort((a, b) => (a.final_position > b.final_position ? 1 : -1));
 
   return `
-		<header>
-			<h1>Race Results</h1>
-		</header>
-		<main>
-			${raceProgress(positions)}
-			<a href="/race">Start a new race</a>
-		</main>
-	`;
+          <header>
+              <h1>Race Results</h1>
+          </header>
+          <main>
+              ${raceProgress(positions)}
+              <a href="/race">Start a new race</a>
+          </main>
+      `;
 }
 
 function raceProgress(positions) {
