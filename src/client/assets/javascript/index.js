@@ -76,58 +76,68 @@ async function delay(ms) {
 
 // This async function controls the flow of the race, add the logic and error handling
 async function handleCreateRace() {
-    // DONE - Get player_id and track_id from the store
-    const player_id = store.player_id;
-    const track_id = store.track_id;
-    // render starting UI
-    const tracks = await getTracks();
-    renderAt(
-      "#race",
-      renderRaceStartView(tracks.filter((track) => track.id == store.track_id)[0])
-    );
+  // DONE - Get player_id and track_id from the store
+  const player_id = store.player_id;
+  const track_id = store.track_id;
+  // render starting UI
+  const tracks = await getTracks();
+  renderAt(
+    "#race",
+    renderRaceStartView(tracks.filter((track) => track.id == store.track_id)[0])
+  );
 
-    try {
-		// Done - invoke the API call to create the race, then save the result
-		const race = await createRace(player_id, track_id);
-		console.log(race);
-	
-		// Done - update the store with the race id
-		store.race_id = race.ID - 1;
-		store.segments = race.Track.segments.length;
-		// For the API to work properly, the race id should be race id - 1
-	
-		// Done - call the async function runCountdown
-		await runCountdown();
-	
-		// Done - call the async function startRace
-		console.log("store.race_id = " + store.race_id);
-	
-		await startRace(store.race_id);
-	
-		// Done - call the async function runRace
-		await runRace(store.race_id);
-	  } catch (error) {
-		console.error("Problem with creating or starting the race:", error);
-	  }
-	}
-	
+  try {
+    // Done - invoke the API call to create the race, then save the result
+    const race = await createRace(player_id, track_id);
+    console.log(race);
+
+    // Done - update the store with the race id
+    store.race_id = race.ID - 1;
+    store.segments = race.Track.segments.length;
+    // For the API to work properly, the race id should be race id - 1
+
+    // Done - call the async function runCountdown
+    await runCountdown();
+
+    // Done - call the async function startRace
+    console.log("store.race_id = " + store.race_id);
+
+    await startRace(store.race_id);
+
+    // Done - call the async function runRace
+    await runRace(store.race_id);
+  } catch (error) {
+    console.error("Problem with creating or starting the race:", error);
+  }
+}
+
 function runRace(raceID) {
   return new Promise((resolve) => {
-    // TODO - use Javascript's built in setInterval method to get race info every 500ms
-    /* 
-		TODO - if the race info status property is "in-progress", update the leaderboard by calling:
+    // Done - use Javascript's built in setInterval method to get race info every 500ms
+    const raceInterval = setInterval(async () => {
+      // Done add error handling for the Promise
+      try {
+        // Done - if the race info status property is "in-progress", update the leaderboard.
+        const res = await getRace(raceID);
 
-		renderAt('#leaderBoard', raceProgress(res.positions))
-	*/
-    /* 
-		TODO - if the race info status property is "finished", run the following:
-
-		clearInterval(raceInterval) // to stop the interval from repeating
-		renderAt('#race', resultsView(res.positions)) // to render the results view
-		reslove(res) // resolve the promise
-	*/
+        if (res.status === "in-progress") {
+          // If the race info status property is "in-progress", update the leaderboard
+          console.log(res);
+          renderAt("#leaderBoard", raceProgress(res.positions));
+          // Done - if the race info status property is "finished".
+        } else if (res.status === "finished") {
+          // If the race info status property is "finished", stop the interval, render the results view, and resolve the promise
+          clearInterval(raceInterval); // to stop the interval from repeating
+          renderAt("#race", resultsView(res.positions)); // to render the results view
+          reslove(res); // resolve the promise
+        }
+      } catch (error) {
+        console.error("Error while getting race info:", error);
+        clearInterval(raceInterval);
+        resolve(null); // Resolve with null in case of error
+      }
+    }, 500);
   });
-  // remember to add error handling for the Promise
 }
 
 async function runCountdown() {
