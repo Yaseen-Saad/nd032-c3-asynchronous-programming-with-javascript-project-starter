@@ -356,11 +356,36 @@ function defaultFetchOpts() {
 // TODO - Make a fetch call (with error handling!) to each of the following API endpoints
 
 function getTracks() {
-  // GET request to `${SERVER}/api/tracks`
+  // Done request to `${SERVER}/api/tracks`
+  return fetch(`${SERVER}/api/tracks`, {
+    method: "GET",
+    ...defaultFetchOpts(),
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error("Failed to fetch tracks");
+    })
+
+    .catch((err) => console.error("Problem with getTracks request:", err));
 }
 
 function getRacers() {
-  // GET request to `${SERVER}/api/cars`
+  // Done request to `${SERVER}/api/cars`
+  return fetch(`${SERVER}/api/cars`, {
+    method: "GET",
+    ...defaultFetchOpts(),
+  })
+    .then((res) => {
+      console.log(res);
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch racers");
+      }
+      return res.json();
+    })
+    .catch((err) => console.error("Problem with getRacers request:", err));
 }
 
 function createRace(player_id, track_id) {
