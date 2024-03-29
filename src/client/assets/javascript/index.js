@@ -147,12 +147,17 @@ async function runCountdown() {
     let timer = 3;
 
     return new Promise((resolve) => {
-      // TODO - use Javascript's built in setInterval method to count down once per second
-
-      // run this DOM manipulation to decrement the countdown for the user
-      document.getElementById("big-numbers").innerHTML = --timer;
-
-      // TODO - if the countdown is done, clear the interval, resolve the promise, and return
+      // Done - use Javascript's built in setInterval method to count down once per second
+      const countdownInterval = setInterval(() => {
+        // run this DOM manipulation to decrement the countdown for the user
+        document.getElementById("big-numbers").innerHTML = --timer;
+        // Done - if the countdown is done, clear the interval, resolve the promise, and return
+        if (timer === 0) {
+          // If the countdown is done, clear the interval, resolve the promise, and return
+          clearInterval(countdownInterval);
+          resolve();
+        }
+      }, 1000);
     });
   } catch (error) {
     console.log(error);
@@ -160,20 +165,24 @@ async function runCountdown() {
 }
 
 function handleSelectPodRacer(target) {
-  console.log("selected a pod", target.id);
-
-  // remove class selected from all racer options
-  const selected = document.querySelector("#racers .selected");
-  if (selected) {
-    selected.classList.remove("selected");
+    console.log("selected a pod", target.id);
+  
+    // remove class selected from all racer options
+    const selected = document.querySelector("#racers .selected");
+    if (selected) {
+      selected.classList.remove("selected");
+    }
+  
+    // add class selected to current target
+    target.classList.add("selected");
+  
+    // Done - save the selected racer to the store
+    console.log("target.id :" + target.id);
+  
+    store.player_id = target.id;
+  
+    console.log("store.player_id AFTER UPDATE :" + store.player_id);
   }
-
-  // add class selected to current target
-  target.classList.add("selected");
-
-  // TODO - save the selected racer to the store
-}
-
 function handleSelectTrack(target) {
   console.log("selected a track", target.id);
 
