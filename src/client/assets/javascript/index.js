@@ -391,8 +391,8 @@ function getRacers() {
 function createRace(player_id, track_id) {
   player_id = parseInt(player_id);
   track_id = parseInt(track_id);
-  const body = { player_id, track_id };
-
+  const id = store.race_id;
+  const body = { id, track_id, player_id };
   return fetch(`${SERVER}/api/races`, {
     method: "POST",
     ...defaultFetchOpts(),
@@ -404,7 +404,18 @@ function createRace(player_id, track_id) {
 }
 
 function getRace(id) {
-  // GET request to `${SERVER}/api/races/${id}`
+  // Done request to `${SERVER}/api/races/${id}`
+  return fetch(`${SERVER}/api/races/${id}`, {
+    method: "GET",
+    ...defaultFetchOpts(),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch race");
+      }
+      return res.json();
+    })
+    .catch((err) => console.error("Problem with getRace request:", err));
 }
 
 function startRace(id) {
